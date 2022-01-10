@@ -27,3 +27,8 @@ class FacultyView(APIView):
                 return Response({'message': 'Faculty created successfully', 'data': {'faculty': 'success'}}, status=status.HTTP_200_OK)
 
         return Response({'error': 'data is not valid'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, format=None):
+        faculties = Faculty.objects.all()
+        serializer = FacultySerializer(faculties, many=True)
+        return Response(serializer.data)
