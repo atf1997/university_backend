@@ -5,8 +5,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
 from auth_uni.models import Instructor, Student, User
-from auth_uni.serializers import RegisterUserSerializer, SigninSerializer, UserSerializer
-
+from auth_uni.serializers import RegisterUserSerializer, SigninSerializer, UserSerializer, AssignFacultyToUserSerializer
+from faculties.models.faculty import Faculty
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 # Create your views here.
 
 
@@ -62,16 +63,38 @@ class SigninView(APIView):
         if serialized_data.is_valid():
             email = serialized_data.validated_data.get('email')
             password = serialized_data.validated_data.get('password')
-            
+
             try:
                 user = User.objects.get(email=email)
                 if user.check_password(password):
-                    token = Token.objects.create(user=user)
+                    token = Token.objects.get_or_create(user=user)
                     return Response({'message': 'User signed successfully', 'data': {'user': UserSerializer(user).data, 'token': token.key}}, status=status.HTTP_200_OK)
                 else:
                     return Response({'error': 'Pass is wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
             except User.DoesNotExist:
                 return Response({'error': 'User not exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error': 'data is not valid'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AsssignFacultyToUserView(APIView):
+
+    def post(self, request):
+        permission_classes = [IsAuthenticated]
+        serialized_data = AssignFacultyToUserSerializer(data=request.data)
+        if serialized_data.is_valid():
+            facultyId = serialized_data.validated_data.get('facultyId')
+
+            try:
+                # after authenticated by permission_classes user is put in request object 
+                user = User.objects.get(auth_token=request.auth)
+                faculty = Faculty.objects.get(pk=facultyId)
+                user.faculty = faculty
+                user.save()
+                return Response({'message': 'Faculty added successfully', 'data': {'user': UserSerializer(user).data}}, status=status.HTTP_200_OK)
+            except Faculty.DoesNotExist:
+                return Response({'error': 'Faculty not exists'}, status=status.HTTP_400_BAD_REQUEST)
+               
 
         return Response({'error': 'data is not valid'}, status=status.HTTP_400_BAD_REQUEST)

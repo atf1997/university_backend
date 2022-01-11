@@ -9,7 +9,10 @@ class User(AbstractUser):
     faculty = models.ForeignKey(Faculty, on_delete=models.SET_NULL, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = [
+        'username',
+        'date_of_birth'
+    ]
 
 class UserMobileNumber(models.Model):
     mobile_number = models.CharField(max_length=50)

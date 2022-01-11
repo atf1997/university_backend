@@ -32,3 +32,7 @@ class SigninSerializer(serializers.Serializer):
 
     email = serializers.EmailField()
     password = serializers.CharField()
+
+class AssignFacultyToUserSerializer(serializers.Serializer):
+
+    facultyId = serializers.CharField()

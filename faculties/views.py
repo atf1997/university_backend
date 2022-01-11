@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from faculties.models import faculty
 from faculties.models.faculty import Faculty
 
-from faculties.serializers import FacultySerializer
+from faculties.serializers import FacultyGetSerializer, FacultySerializer
 from rest_framework import status
 
 
@@ -30,5 +30,5 @@ class FacultyView(APIView):
 
     def get(self, request, format=None):
         faculties = Faculty.objects.all()
-        serializer = FacultySerializer(faculties, many=True)
+        serializer = FacultyGetSerializer(faculties, many=True)
         return Response(serializer.data)

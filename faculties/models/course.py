@@ -8,15 +8,16 @@ class Course(models.Model):
 
 class Assessment(models.Model):
     name = models.CharField(max_length=50)
-    grade = models.FloatField(min=1)
-    weight = models.FloatField(min=1, max=100)
+    grade = models.FloatField()
+    weight = models.FloatField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     created_by = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)
 
+
 class AssessmentGrade(models.Model):
-    assessment = models.ForeignKey(Assessment)
-    student = models.ForeignKey(Student)
-    grade = models.FloatField(min=0)
+    assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    grade = models.FloatField()
     added_by = models.ForeignKey(Instructor, on_delete=models.SET_NULL, null=True)
 
 
